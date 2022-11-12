@@ -9,6 +9,109 @@ import './utils/prototypes'
 
 import CountryData from './CountryData.js';
 
+const guessCountryCode=(inputNumber, country, onlyCountries, hiddenAreaCodes,props)=>{
+  if (props.enableAreaCodes === false) {
+    let mainCode;
+    hiddenAreaCodes.some(country => {
+      if (startsWith(inputNumber, country.dialCode)) {
+        onlyCountries.some(o => {
+          if (country.iso2 === o.iso2 && o.mainCode) {
+            mainCode = o;
+            return true;
+          }
+        })
+        return true;
+      }
+    })
+    if (mainCode) return mainCode;
+  }
+
+  const secondBestGuess = onlyCountries.find(o => o.iso2 == country);
+  if (inputNumber.trim() === '') return secondBestGuess;
+
+  const bestGuess = onlyCountries.reduce((selectedCountry, country) => {
+    if (startsWith(inputNumber, country.dialCode)) {
+      if (country.dialCode.length > selectedCountry.dialCode.length) {
+        return country;
+      }
+      if (country.dialCode.length === selectedCountry.dialCode.length && country.priority < selectedCountry.priority) {
+        return country;
+      }
+    }
+    return selectedCountry;
+  }, {dialCode: '', priority: 10001}, this);
+
+  if (!bestGuess.name) return secondBestGuess;
+  return bestGuess;
+}
+
+const formatNumber2 = (text, country,props) => {
+  if (!country) return text;
+
+  const { format } = country;
+  const { disableCountryCode, enableAreaCodeStretch, enableLongNumbers, autoFormat } = props;
+
+  let pattern;
+  if (disableCountryCode) {
+    pattern = format.split(' ');
+    pattern.shift();
+    pattern = pattern.join(' ');
+  } else {
+    if (enableAreaCodeStretch && country.isAreaCode) {
+      pattern = format.split(' ');
+      pattern[1] = pattern[1].replace(/\.+/, ''.padEnd(country.areaCodeLength, '.'))
+      pattern = pattern.join(' ');
+    } else {
+      pattern = format;
+    }
+  }
+
+  if (!text || text.length === 0) {
+    return disableCountryCode ? '' : props.prefix;
+  }
+
+  // for all strings with length less than 3, just return it (1, 2 etc.)
+  // also return the same text if the selected country has no fixed format
+  if ((text && text.length < 2) || !pattern || !autoFormat) {
+    return disableCountryCode ? text : props.prefix+text;
+  }
+
+  const formattedObject = reduce(pattern, (acc, character) => {
+    if (acc.remainingText.length === 0) {
+      return acc;
+    }
+
+    if (character !== '.') {
+      return {
+        formattedText: acc.formattedText + character,
+        remainingText: acc.remainingText
+      };
+    }
+
+    const [ head, ...tail ] = acc.remainingText;
+
+    return {
+      formattedText: acc.formattedText + head,
+      remainingText: tail
+    };
+  }, {
+    formattedText: '',
+    remainingText: text.split('')
+  });
+
+  let formattedNumber;
+  if (enableLongNumbers) {
+    formattedNumber = formattedObject.formattedText + formattedObject.remainingText.join('');
+  } else {
+    formattedNumber = formattedObject.formattedText;
+  }
+
+  // Always close brackets
+  if (formattedNumber.includes('(') && !formattedNumber.includes(')')) formattedNumber += ')';
+  return formattedNumber;
+}
+
+
 class PhoneInput extends React.Component {
   static propTypes = {
     country: PropTypes.oneOfType([
@@ -256,6 +359,40 @@ class PhoneInput extends React.Component {
     }
   }
 
+  static getDerivedStateFromProps(props, state){
+    const inputNumber = props.value ? props.value.replace(/\D/g, '') : '';
+    
+    let countryGuess;
+    if (props.disableInitialCountryGuess) {
+      countryGuess = 0;
+    } else if (inputNumber.length > 1) {
+      
+      // Country detect by phone
+      countryGuess = guessCountryCode(inputNumber.substring(0, 6), props.country, state.onlyCountries, state.hiddenAreaCodes,props) || 0;
+    } else if (props.country) {
+      // Default country
+      countryGuess = state.onlyCountries.find(o => o.iso2 == props.country) || 0;
+    } else {
+      // Empty params
+      countryGuess = 0;
+    }
+
+    const dialCode = (
+      inputNumber.length < 2 &&
+      countryGuess &&
+      !startsWith(inputNumber, countryGuess.dialCode)
+    ) ? countryGuess.dialCode : '';
+
+    let formattedNumber;
+    formattedNumber = (inputNumber === '' && countryGuess === 0) ? '' :
+    formatNumber2(
+      (props.disableCountryCode ? '' : dialCode) + inputNumber,
+      countryGuess.name ? countryGuess : undefined,
+      props
+    );
+    return {...state,formattedNumber:formattedNumber,selectedCountry:countryGuess};
+  }
+
   getProbableCandidate = memoize((queryString) => {
     if (!queryString || queryString.length === 0) {
       return null;
@@ -271,7 +408,8 @@ class PhoneInput extends React.Component {
     // if enableAreaCodes == false, try to search in hidden area codes to detect area code correctly
     // then search and insert main country which has this area code
     // https://github.com/bl00mber/react-phone-input-2/issues/201
-    if (this.props.enableAreaCodes === false) {
+    return guessCountryCode(inputNumber, country, onlyCountries, hiddenAreaCodes,this.props);
+    /*if (this.props.enableAreaCodes === false) {
       let mainCode;
       hiddenAreaCodes.some(country => {
         if (startsWith(inputNumber, country.dialCode)) {
@@ -303,7 +441,7 @@ class PhoneInput extends React.Component {
     }, {dialCode: '', priority: 10001}, this);
 
     if (!bestGuess.name) return secondBestGuess;
-    return bestGuess;
+    return bestGuess;*/
   });
 
   // Hooks for updated props
@@ -399,7 +537,8 @@ class PhoneInput extends React.Component {
   }
 
   formatNumber = (text, country) => {
-    if (!country) return text;
+    return formatNumber2(text,country,this.props);
+    /*if (!country) return text;
 
     const { format } = country;
     const { disableCountryCode, enableAreaCodeStretch, enableLongNumbers, autoFormat } = this.props;
@@ -461,7 +600,7 @@ class PhoneInput extends React.Component {
 
     // Always close brackets
     if (formattedNumber.includes('(') && !formattedNumber.includes(')')) formattedNumber += ')';
-    return formattedNumber;
+    return formattedNumber;*/
   }
 
   // Put the cursor to the end of the input (usually after a focus event)
