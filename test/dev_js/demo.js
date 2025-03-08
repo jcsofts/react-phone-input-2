@@ -21,7 +21,10 @@ class Demo extends React.Component {
     }
   }
 
+
+
   render() {
+    console.log("state.value",this.state)
     return (
       <div style={{fontFamily: "'Roboto', sans-serif", fontSize: '15px', padding: '10px 25px', margin: '20px auto', maxWidth: '1500px'}}>
         <style dangerouslySetInnerHTML={{__html: `
@@ -44,7 +47,7 @@ class Demo extends React.Component {
           }
         `}} />
         <p style={{fontWeight: '500'}}>Created by <a style={{color: '#000'}}
-          href="https://github.com/bl00mber/react-phone-input-2">Nick Reiley</a></p>
+          href="https://github.com/jcsofts/jcsoft-react-phone-input-2">Nick Reiley</a></p>
         <div style={{display: 'inline-block', verticalAlign: 'top'}}>
           <p>Exclude countries (usa, canada)</p>
           <PhoneInput
@@ -186,8 +189,9 @@ class Demo extends React.Component {
           <p>State manipulations</p>
           <PhoneInput
             value={this.state.value}
+            country={this.state.country}
             onChange={(value, country, e, formattedValue) => {console.log(value, country, e, formattedValue);
-              this.setState({ value })}}
+              this.setState({ value,country:country.countryCode })}}
             enableAreaCodes
             defaultErrorMessage='Invalid value'
             isValid={(value, country) => {

@@ -1,4 +1,4 @@
-declare module "react-phone-input-2" {
+declare module "jcsoft-react-phone-input-2" {
   import React from "react";
 
   export interface CountryData {

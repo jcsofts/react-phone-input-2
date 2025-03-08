@@ -361,12 +361,12 @@ class PhoneInput extends React.Component {
 
   static getDerivedStateFromProps(props, state){
     const inputNumber = props.value ? props.value.replace(/\D/g, '') : '';
-    
+
     let countryGuess;
     if (props.disableInitialCountryGuess) {
       countryGuess = 0;
     } else if (inputNumber.length > 1) {
-      
+
       // Country detect by phone
       countryGuess = guessCountryCode(inputNumber.substring(0, 6), props.country, state.onlyCountries, state.hiddenAreaCodes,props) || 0;
     } else if (props.country) {
@@ -407,7 +407,7 @@ class PhoneInput extends React.Component {
   guessSelectedCountry = memoize((inputNumber, country, onlyCountries, hiddenAreaCodes) => {
     // if enableAreaCodes == false, try to search in hidden area codes to detect area code correctly
     // then search and insert main country which has this area code
-    // https://github.com/bl00mber/react-phone-input-2/issues/201
+    // https://github.com/jcsofts/jcsoft-react-phone-input-2/issues/201
     return guessCountryCode(inputNumber, country, onlyCountries, hiddenAreaCodes,this.props);
     /*if (this.props.enableAreaCodes === false) {
       let mainCode;

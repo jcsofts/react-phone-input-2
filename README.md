@@ -1,22 +1,15 @@
-# React-Phone-Input-2
+# jcsoft-react-phone-input-2
 Highly customizable phone input component with auto formatting.
-
-[![npm version](https://img.shields.io/npm/v/react-phone-input-2.svg?style=flat)](https://www.npmjs.com/package/react-phone-input-2)
-[![npm downloads](https://img.shields.io/npm/dm/react-phone-input-2.svg?style=flat)](https://www.npmjs.com/package/react-phone-input-2)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/bl00mber/react-phone-input-2#contributing)
-[![travis build](https://travis-ci.org/bl00mber/react-phone-input-2.svg?branch=master)](https://travis-ci.org/bl00mber/react-phone-input-2)
-
-![animation](https://media.giphy.com/media/xiORAWnqoTJDsH0UOI/giphy.gif)
 
 ## Installation
 ```shell-script
-npm install react-phone-input-2 --save
+npm install jcsoft-react-phone-input-2 --save
 ```
 
 ## Usage
 ```jsx
-import PhoneInput from 'react-phone-input-2'
-import 'react-phone-input-2/lib/style.css'
+import PhoneInput from 'jcsoft-react-phone-input-2'
+import 'jcsoft-react-phone-input-2/lib/style.css'
 
 <PhoneInput
   country={'us'}
@@ -26,9 +19,9 @@ import 'react-phone-input-2/lib/style.css'
 ```
 **available styles** - style • high-res • material • bootstrap • semantic-ui • plain
 
-#### [Demo 1 (UI)](https://bl00mber.github.io/react-phone-input-2.html) - [Demo 2 (CSS)](https://bl00mber.github.io/react-phone-input-2-css.html)
+#### [Demo 1 (UI)](https://github.com/jcsofts/jcsoft-react-phone-input-2.html) - [Demo 2 (CSS)](https://github.com/jcsofts/jcsoft-react-phone-input-2-css.html)
 
-![screenshot](https://raw.githubusercontent.com/bl00mber/react-phone-input-2/master/test/screenshot.png)
+![screenshot](https://github.com/jcsofts/jcsoft-react-phone-input-2/master/test/screenshot.png)
 
 ## Options
 <table>
@@ -165,7 +158,6 @@ import 'react-phone-input-2/lib/style.css'
   - [Check validity of the phone number](#check-validity-of-the-phone-number)
   - [CDN](#cdn)
 - [Contributing](#contributing)
-- [Support](https://www.paypal.me/bloomber/20)
 
 ### Style
 <table>
@@ -303,7 +295,7 @@ Country data object not returns from onKeyDown event
 `hu` Hungarian, `pl` Polish, `ko` Korean
 
 ```jsx
-import es from 'react-phone-input-2/lang/es.json'
+import es from 'jcsoft-react-phone-input-2/lang/es.json'
 
 <PhoneInput
   localization={es}
@@ -494,19 +486,12 @@ const placeholder = useMemo(() => {
 ```
 </details>
 
-### CDN
-```html
-<script src="https://unpkg.com/react-phone-input-2@2.x/dist/lib.js"></script>
-```
-
 ## Contributing
 - Code style changes not allowed
 - Do not create issues about incorrect or missing country masks (of already present countries) or absent area codes (they will be closed). Only create issues if the subject is an actual mechanism that is not present in the component. Otherwise create a PR with a link that proves the correctness of your newly suggested mask or list of area codes
 - Do not send new languages
 
 ## License
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bl00mber/react-phone-input-2/blob/master/LICENSE)
+MIT
 
 Based on [react-phone-input](https://github.com/razagill/react-phone-input)
-
-Make sure you donated for lib maintenance [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/bloomber/20)
